@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: wakala-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres.oizkeafsnvawtywmxqlu:Duran1234567890rutta@aws-0-eu-west-1.pooler.supabase.com:5432/postgres
+      - key: SECRET_KEY
+        value: wakala-super-secret-key-2024
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
