@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import agents, transactions, credit_score, loans, fraud, auth
+from routers import agents, transactions, credit_score, loans, fraud, auth, analytics
 
 app = FastAPI(
     title="Wakala Ledger API",
@@ -19,12 +19,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth.router)
 app.include_router(agents.router)
 app.include_router(transactions.router)
 app.include_router(credit_score.router)
 app.include_router(loans.router)
 app.include_router(fraud.router)
+app.include_router(analytics.router)
 
 @app.get("/")
 def root():

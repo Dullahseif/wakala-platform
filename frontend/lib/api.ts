@@ -44,3 +44,11 @@ export default API
 // Auth
 export const registerUser = (data: object) => API.post('/auth/register', data)
 export const loginUser = (data: object) => API.post('/auth/login', data)
+
+// Analytics
+export const getAnalyticsSummary = () => API.get('/analytics/summary')
+export const getTransactionsByType = () => API.get('/analytics/transactions-by-type')
+export const getTransactionsByProvider = () => API.get('/analytics/transactions-by-provider')
+export const getCreditDistribution = () => API.get('/analytics/credit-distribution')
+export const getAgentsByLocation = () => API.get('/analytics/agents-by-location')
+export const getLoansByStatus = () => API.get('/analytics/loans-by-status')
