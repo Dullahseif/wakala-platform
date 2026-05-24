@@ -1,19 +1,17 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getLoans, getCreditScores, getAgents } from '@/lib/api'
+import { getLoans, getCreditScores } from '@/lib/api'
 
 export default function OfficerDashboard() {
   const [loans, setLoans] = useState<any[]>([])
   const [scores, setScores] = useState<any[]>([])
-  const [agents, setAgents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([getLoans(), getCreditScores(), getAgents()])
-      .then(([l, s, a]) => {
+    Promise.all([getLoans(), getCreditScores()])
+      .then(([l, s]) => {
         setLoans(l.data.loans)
         setScores(s.data.scores)
-        setAgents(a.data.agents)
         setLoading(false)
       }).catch(() => setLoading(false))
   }, [])
@@ -48,44 +46,31 @@ export default function OfficerDashboard() {
         <div className="bg-gray-900 border border-yellow-500/20 rounded-xl p-6 mb-8">
           <h2 className="text-white font-semibold mb-4">Pending Loan Applications</h2>
           <div className="space-y-3">
-            {pending.map((loan) => {
-              const agentScore = scores.find(s => s.agent_id === loan.agent_id)
-              return (
-                <div key={loan.id} className="flex items-center justify-between bg-gray-800/50 rounded-lg p-4">
-                  <div>
-                    <p className="text-white font-medium">{loan.agent_name}</p>
-                    <p className="text-gray-500 text-xs">{loan.agent_id} · {loan.duration_months} months · {loan.interest_rate}% interest</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-white font-semibold">TZS {loan.amount.toLocaleString()}</p>
-                    <p className="text-gray-500 text-xs">Requested amount</p>
-                  </div>
-                  {agentScore && (
-                    <div className="text-center">
-                      <p className={`font-bold ${
-                        agentScore.score >= 800 ? 'text-green-400' :
-                        agentScore.score >= 650 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>{agentScore.score}</p>
-                      <p className="text-gray-500 text-xs">Credit Score</p>
-                    </div>
-                  )}
-                  
-                    href="/officer/loans"
-                    className="bg-blue-500 hover:bg-blue-400 text-white text-xs font-semibold px-4 py-2 rounded-lg transition"
-                  >
-                    Review
-                  </a>
+            {pending.map((loan) => (
+              <div key={loan.id} className="flex items-center justify-between bg-gray-800/50 rounded-lg p-4">
+                <div>
+                  <p className="text-white font-medium">{loan.agent_name}</p>
+                  <p className="text-gray-500 text-xs">{loan.agent_id} · {loan.duration_months} months</p>
                 </div>
-              )
-            })}
+                <div className="text-center">
+                  <p className="text-white font-semibold">TZS {loan.amount.toLocaleString()}</p>
+                  <p className="text-gray-500 text-xs">Requested</p>
+                </div>
+                <span className="bg-yellow-500/10 text-yellow-400 text-xs px-3 py-1 rounded-full">
+                  Pending Review
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h2 className="text-white font-semibold mb-4">Recent Credit Scores</h2>
+        <h2 className="text-white font-semibold mb-4">Agent Credit Scores</h2>
         {loading ? (
           <p className="text-gray-500 text-sm">Loading...</p>
+        ) : scores.length === 0 ? (
+          <p className="text-gray-500 text-sm text-center py-8">No credit scores yet.</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
