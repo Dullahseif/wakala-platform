@@ -3,15 +3,55 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-const links = [
-  { href: '/dashboard',    label: 'Overview',      icon: '▦' },
-  { href: '/agents',       label: 'Agents',        icon: '👤' },
-  { href: '/transactions', label: 'Transactions',  icon: '💳' },
-  { href: '/credit-score', label: 'Credit Scores', icon: '⭐' },
-  { href: '/loans',        label: 'Loans',         icon: '🏦' },
-  { href: '/fraud',        label: 'Fraud Alerts',  icon: '🚨' },
-  { href: '/analytics',    label: 'Analytics',     icon: '📊' },
+const adminLinks = [
+  { href: '/dashboard',        label: 'Overview',       icon: '▦' },
+  { href: '/agents',           label: 'Agents',         icon: '👤' },
+  { href: '/transactions',     label: 'Transactions',   icon: '💳' },
+  { href: '/credit-score',     label: 'Credit Scores',  icon: '⭐' },
+  { href: '/loans',            label: 'Loans',          icon: '🏦' },
+  { href: '/fraud',            label: 'Fraud Alerts',   icon: '🚨' },
+  { href: '/analytics',        label: 'Analytics',      icon: '📊' },
+  { href: '/reports',          label: 'Reports',        icon: '📄' },
+  { href: '/users',            label: 'User Management',icon: '⚙' },
 ]
+
+const agentLinks = [
+  { href: '/agent/dashboard',  label: 'My Dashboard',   icon: '▦' },
+  { href: '/agent/transactions',label: 'My Transactions',icon: '💳' },
+  { href: '/agent/credit-score',label: 'My Credit Score',icon: '⭐' },
+  { href: '/agent/loans',      label: 'My Loans',       icon: '🏦' },
+]
+
+const loanOfficerLinks = [
+  { href: '/officer/dashboard', label: 'Overview',       icon: '▦' },
+  { href: '/officer/loans',     label: 'Loan Applications',icon: '🏦' },
+  { href: '/officer/credit-score',label: 'Credit Scores', icon: '⭐' },
+  { href: '/officer/agents',    label: 'Agents',         icon: '👤' },
+]
+
+const analystLinks = [
+  { href: '/analyst/dashboard', label: 'Overview',       icon: '▦' },
+  { href: '/analyst/analytics', label: 'Analytics',      icon: '📊' },
+  { href: '/analyst/transactions',label: 'Transactions', icon: '💳' },
+  { href: '/analyst/fraud',     label: 'Fraud Monitor',  icon: '🚨' },
+  { href: '/analyst/reports',   label: 'Reports',        icon: '📄' },
+]
+
+const getRoleLinks = (role: string) => {
+  if (role === 'admin') return adminLinks
+  if (role === 'agent') return agentLinks
+  if (role === 'loan_officer') return loanOfficerLinks
+  if (role === 'analyst') return analystLinks
+  return adminLinks
+}
+
+const getRoleLabel = (role: string) => {
+  if (role === 'admin') return 'Administrator'
+  if (role === 'agent') return 'Wakala Agent'
+  if (role === 'loan_officer') return 'Loan Officer'
+  if (role === 'analyst') return 'Analyst'
+  return role
+}
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -29,12 +69,27 @@ export default function Sidebar() {
     router.push('/login')
   }
 
+  const links = getRoleLinks(user?.role || 'admin')
+
   return (
     <aside className="w-64 min-h-screen bg-gray-900 border-r border-gray-800 flex flex-col">
       <div className="px-6 py-5 border-b border-gray-800">
         <h1 className="text-green-400 font-bold text-xl">Wakala</h1>
         <p className="text-gray-500 text-xs mt-1">Ledger & Credit Platform</p>
       </div>
+
+      {user && (
+        <div className="px-4 py-3 border-b border-gray-800">
+          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+            user.role === 'admin'       ? 'bg-purple-500/10 text-purple-400' :
+            user.role === 'agent'       ? 'bg-green-500/10 text-green-400' :
+            user.role === 'loan_officer'? 'bg-blue-500/10 text-blue-400' :
+            'bg-yellow-500/10 text-yellow-400'
+          }`}>
+            {getRoleLabel(user.role)}
+          </span>
+        </div>
+      )}
 
       <nav className="flex-1 px-4 py-6 space-y-1">
         {links.map((link) => {
@@ -63,8 +118,8 @@ export default function Sidebar() {
               {user?.name?.[0] || 'A'}
             </div>
             <div>
-              <p className="text-white text-sm font-medium">{user?.name || 'Admin'}</p>
-              <p className="text-gray-500 text-xs">{user?.role || 'admin'}</p>
+              <p className="text-white text-sm font-medium">{user?.name || 'User'}</p>
+              <p className="text-gray-500 text-xs">{getRoleLabel(user?.role || 'admin')}</p>
             </div>
           </div>
           <button

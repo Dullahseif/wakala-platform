@@ -10,18 +10,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await loginUser(form)
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('user', JSON.stringify(res.data.user))
-      router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed')
-      setLoading(false)
-    }
+  setLoading(true)
+  setError('')
+  try {
+    const res = await loginUser(form)
+    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('user', JSON.stringify(res.data.user))
+    const role = res.data.user.role
+    if (role === 'admin') router.push('/dashboard')
+    else if (role === 'agent') router.push('/agent/dashboard')
+    else if (role === 'loan_officer') router.push('/officer/dashboard')
+    else if (role === 'analyst') router.push('/analyst/dashboard')
+    else router.push('/dashboard')
+  } catch (err: any) {
+    setError(err.response?.data?.detail || 'Login failed')
+    setLoading(false)
   }
+}
 
   return (
     <main className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
